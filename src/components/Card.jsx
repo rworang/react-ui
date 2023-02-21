@@ -1,6 +1,8 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { format } from "timeago.js";
 
 const Container = styled.div`
   width: ${(props) => props.type !== "sm" && "360px"};
@@ -44,23 +46,28 @@ const Info = styled.div`
   color: ${({ theme }) => theme.textSoft};
 `;
 
-const Card = ({ type }) => {
+const Card = ({ type, video }) => {
+  const [channel, setChannel] = useState({});
+
+  useEffect(() => {
+    const fetchChannel = async () => {
+      const res = await axios.get(`/users/find/${video.userId}`);
+      setChannel(res.data);
+    };
+    fetchChannel();
+  }, [video.userId]);
   return (
-    <Link to="/video/test" style={{ textDecoration: "none" }}>
+    <Link to={`/video/${video._id}`} style={{ textDecoration: "none" }}>
       <Container type={type}>
-        <Image
-          src="https://i.ytimg.com/vi/ymGt7I4Yn3k/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBtVHugv4Jt-cmjWmcvoJRTR-QMJQ"
-          type={type}
-        />
+        <Image src={video.imgUrl} type={type} />
         <Details type={type}>
-          <ChannelImage
-            type={type}
-            src="https://yt3.ggpht.com/J6uN_K307Hqu9pQh5x9QigigTckcFUzOTdiZrvaWZfL1DcGqLdXWYRGqDyPi3yTsbL4qbSem=s88-c-k-c0x00ffffff-no-rj-mo"
-          />
+          <ChannelImage type={type} src={channel.img} />
           <Texts>
-            <Title>Test video</Title>
-            <ChannelName>Amnezia</ChannelName>
-            <Info>1.256,147 views ~ 1 day ago</Info>
+            <Title>{video.title}</Title>
+            <ChannelName>{channel.name}</ChannelName>
+            <Info>
+              {video.videoViews} views ~{format(video.createdAt)}
+            </Info>
           </Texts>
         </Details>
       </Container>

@@ -18,8 +18,11 @@ import {
   FlagOutlined,
   HelpOutlineOutlined,
   SettingsBrightnessOutlined,
+  LogoutOutlined,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/userSlice";
 
 const Container = styled.div`
   flex: 1;
@@ -80,6 +83,8 @@ const Title = styled.h2`
 `;
 
 const Menu = ({ darkMode, setDarkMode }) => {
+  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   return (
     <Container>
       <Wrapper>
@@ -89,18 +94,27 @@ const Menu = ({ darkMode, setDarkMode }) => {
             FakeTube
           </Logo>
         </Link>
-        <Item>
-          <HomeIcon />
-          Home
-        </Item>
-        <Item>
-          <ExploreOutlined />
-          Explore
-        </Item>
-        <Item>
-          <SubscriptionsOutlined />
-          Subscriptions
-        </Item>
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+          <Item>
+            <HomeIcon />
+            Home
+          </Item>
+        </Link>
+        <Link to="trends" style={{ textDecoration: "none", color: "inherit" }}>
+          <Item>
+            <ExploreOutlined />
+            Explore
+          </Item>
+        </Link>
+        <Link
+          to="subscriptions"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
+            <SubscriptionsOutlined />
+            Subscriptions
+          </Item>
+        </Link>
         <Hr />
         <Item>
           <VideoLibraryOutlined />
@@ -111,15 +125,19 @@ const Menu = ({ darkMode, setDarkMode }) => {
           History
         </Item>
         <Hr />
-        <Login>
-          Sign in to like videos, comment & subscribe
-          <Link to="/signin" style={{ textDecoration: "none" }}>
-            <Button>
-              <AccountCircleOutlined /> SIGN IN
-            </Button>
-          </Link>
-        </Login>
-        <Hr />
+        {!currentUser && (
+          <>
+            <Login>
+              Sign in to like videos, comment & subscribe
+              <Link to="/signin" style={{ textDecoration: "none" }}>
+                <Button>
+                  <AccountCircleOutlined /> SIGN IN
+                </Button>
+              </Link>
+            </Login>
+            <Hr />
+          </>
+        )}
         <Title>BEST OF FAKETUBE</Title>
         <Item>
           <LibraryMusicOutlined />
@@ -162,6 +180,11 @@ const Menu = ({ darkMode, setDarkMode }) => {
           <SettingsBrightnessOutlined />
           {darkMode ? "Light" : "Dark"} Mode
         </Item>
+        {currentUser && (
+          <Button onClick={() => dispatch(logout())}>
+            <LogoutOutlined /> SIGN OUT
+          </Button>
+        )}
       </Wrapper>
     </Container>
   );
